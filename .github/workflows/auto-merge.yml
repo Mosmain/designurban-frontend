@@ -2,7 +2,7 @@ name: Auto Merge Dev to Master
 
 on:
   schedule:
-    - cron: '55 21 * * 3'
+    - cron: '25 22 * * 3' # Четверг 0:50 по Москве (UTC+3)
 
 jobs:
   auto-merge:
@@ -17,13 +17,24 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Pull the latest changes
-        run: |
-          git fetch origin
-          git checkout master
-          git merge origin/dev || exit 0
+      - name: Fetch all branches
+        run: git fetch --all
 
-      - name: Push merge changes (if no conflicts)
+      - name: Backup master branch
+        run: |
+          current_date=$(date +%Y-%m-%d)
+          git checkout master
+          git branch master-backup-$current_date
+          git push origin master-backup-$current_date
+
+      - name: Switch to master branch
+        run: git checkout master
+
+      - name: Merge dev into master
+        run: |
+          git merge origin/dev --no-edit || exit 0
+
+      - name: Push changes (if no conflicts)
         if: ${{ success() }}
         run: git push origin master
 
@@ -32,7 +43,7 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Merge dev into master (auto PR due to conflicts)'
+          commit-message: 'Merge dev into master (conflict PR)'
           branch: auto/merge-dev-to-master
           base: master
           title: 'Auto PR: Merge dev into master'
