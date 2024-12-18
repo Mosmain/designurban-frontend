@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     if (error instanceof Error) {
       return {
         success: false,
-        error: error.message,
+        error: 'Ошибка запроса',
       }
     }
 
