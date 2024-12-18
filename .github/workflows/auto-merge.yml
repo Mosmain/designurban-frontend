@@ -1,52 +1,36 @@
-name: Auto Merge Dev to Master
+name: Weekly Release
 
 on:
   schedule:
-    - cron: '25 22 * * 3' # Четверг 0:50 по Москве (UTC+3)
+    # Каждое воскресенье в 21:00 по МСК
+    - cron: '0 18 * * 0'
+  workflow_dispatch:
 
 jobs:
-  auto-merge:
+  merge-dev-to-master:
+    name: Merge dev to master
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Configure git
+      - name: Set up Git
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
 
       - name: Fetch all branches
         run: git fetch --all
 
-      - name: Backup master branch
-        run: |
-          current_date=$(date +%Y-%m-%d)
-          git checkout master
-          git branch master-backup-$current_date
-          git push origin master-backup-$current_date
-
-      - name: Switch to master branch
+      - name: Checkout master branch
         run: git checkout master
 
       - name: Merge dev into master
         run: |
-          git merge origin/dev --no-edit || exit 0
+          git merge origin/dev --no-edit
 
-      - name: Push changes (if no conflicts)
-        if: ${{ success() }}
+      - name: Push changes to master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: git push origin master
-
-      - name: Create a Pull Request if merge fails
-        if: failure()
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          commit-message: 'Merge dev into master (conflict PR)'
-          branch: auto/merge-dev-to-master
-          base: master
-          title: 'Auto PR: Merge dev into master'
-          body: |
-            This pull request was created automatically because the direct merge of `dev` into `master` resulted in conflicts.
-            Please resolve the conflicts and merge manually.
