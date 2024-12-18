@@ -1,13 +1,21 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: true,
   compatibilityDate: '2024-11-01',
   modules: ['@nuxt/eslint', '@nuxt/test-utils/module', '@hypernym/nuxt-gsap'],
   devtools: { enabled: true },
 
+  app: {
+    baseURL: '/',
+  },
+
+  nitro: {
+    preset: 'vercel',
+  },
+
   runtimeConfig: {
     telegramBotToken: process.env.TELEGRAM_BOT_TOKEN,
     telegramChatId: process.env.TELEGRAM_CHAT_ID,
-    public: {},
   },
 
   css: ['~/assets/css/main.css'],
