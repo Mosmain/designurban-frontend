@@ -1,0 +1,41 @@
+name: Auto Merge Dev to Master
+
+on:
+  schedule:
+    - cron: '55 21 * * 3'
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Pull the latest changes
+        run: |
+          git fetch origin
+          git checkout master
+          git merge origin/dev || exit 0
+
+      - name: Push merge changes (if no conflicts)
+        if: ${{ success() }}
+        run: git push origin master
+
+      - name: Create a Pull Request if merge fails
+        if: failure()
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'Merge dev into master (auto PR due to conflicts)'
+          branch: auto/merge-dev-to-master
+          base: master
+          title: 'Auto PR: Merge dev into master'
+          body: |
+            This pull request was created automatically because the direct merge of `dev` into `master` resulted in conflicts.
+            Please resolve the conflicts and merge manually.
