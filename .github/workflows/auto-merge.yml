@@ -2,7 +2,7 @@ name: Auto Merge Dev to Master
 
 on:
   schedule:
-    - cron: '25 22 * * 3' # Четверг 0:50 по Москве (UTC+3)
+    - cron: '45 22 * * 3'
 
 jobs:
   auto-merge:
