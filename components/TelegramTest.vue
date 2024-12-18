@@ -80,10 +80,10 @@
         success.value = true
         form.reset()
       } else {
-        error.value = response.error
+        error.value = 'Error!'
       }
-    } catch (err) {
-      error.value = err.message
+    } catch (error) {
+      error.value = 'Error!'
     }
   }
 </script>
