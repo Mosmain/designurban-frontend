@@ -1,6 +1,7 @@
 name: Auto Merge Dev to Master
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '45 22 * * 3'
 
