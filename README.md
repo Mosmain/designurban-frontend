@@ -2,6 +2,12 @@
 
 Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## Wakatime badges
+
+How much time was spent on this repo
+
+[![wakatime](https://wakatime.com/badge/github/Mosmain/designurban-frontend.svg)](https://wakatime.com/badge/github/Mosmain/designurban-frontend)
+
 ## Setup
 
 Make sure to install dependencies:
