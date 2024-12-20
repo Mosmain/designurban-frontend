@@ -47,43 +47,7 @@
 </template>
 
 <script setup>
-  import { reactive, ref } from 'vue'
-  import { omitBy, isEmpty } from 'lodash-unified'
+  import { useContactForm } from '~/composables/useContactForm'
 
-  const form = reactive({
-    name: '',
-    phone: '',
-    message: '',
-    reset() {
-      Object.keys(this).forEach((key) => {
-        if (typeof this[key] !== 'function') this[key] = ''
-      })
-    },
-  })
-
-  const success = ref(false)
-  const error = ref(null)
-
-  const sendMessage = async () => {
-    success.value = false
-    error.value = null
-
-    try {
-      const body = omitBy(form, (value) => isEmpty(value))
-
-      const response = await $fetch('/api/telegram', {
-        method: 'POST',
-        body,
-      })
-
-      if (response.success) {
-        success.value = true
-        form.reset()
-      } else {
-        error.value = response.error
-      }
-    } catch (error) {
-      error.value = error.message
-    }
-  }
+  const { form, success, error, sendMessage } = useContactForm()
 </script>
